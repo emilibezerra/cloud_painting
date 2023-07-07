@@ -1,7 +1,7 @@
 # Cloud Painting: Recuperação de Regiões Cobertas por Nuvens
 
 [![Licença: MIT](https://img.shields.io/badge/Licen%C3%A7a-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Contribuidores do GitHub](https://img.shields.io/github/contributors/emilibezerra/cloud_painting.git)](https://github.com/emilibezerra/cloud_painting.git/graphs/contributors)
+[![Contribuidores do GitHub](https://img.shields.io/github/contributors/emilibezerra/cloud_painting)](https://github.com/emilibezerra/cloud_painting/graphs/contributors)
 
 Bem-vindo ao repositório Cloud Painting! Aqui você encontrará um projeto relacionado à recuperação de regiões cobertas por nuvens em imagens satelitais, utilizando a técnica de inpainting. Este repositório é desenvolvido e mantido por [Emili Bezerra](https://github.com/emilibezerra).
 
