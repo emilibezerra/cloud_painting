@@ -30,6 +30,15 @@ IMAGE_EXTENSIONS = {'bmp', 'jpg', 'jpeg', 'pgm', 'png', 'ppm',
                     'tif', 'tiff', 'webp'}
 
 def adjust_size(img, output_size):
+  """
+        This function receive an image and an output_size (to compute the final size image),
+        and transform image shape to square
+        Args:
+            img: uint8
+            output_size: '256' Extensions from images
+        Return:
+              image croped
+  """
   shape = img.shape
   x, y = shape[1], shape[0]
   if y < x:
@@ -42,6 +51,16 @@ def adjust_size(img, output_size):
     return img[:y-(y-x),:x]
 
 def crop_image(img=None, output_size=256):
+  """
+        This function receive an image and an output_size (to compute the final size image),
+        and crop the image erasing the background 
+        Args:
+            img: uint8
+            output_size: '256' Extensions from images
+        Return:
+              image croped
+  """
+  print("INFO: croping and adjusting image...")
   img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
   img_gray = cv2.GaussianBlur(img_gray, (11, 11), 0)
   val, bin_mask = cv2.threshold(img_gray,1,255,cv2.THRESH_BINARY)#cv2.bitwise_not(im)
@@ -50,28 +69,30 @@ def crop_image(img=None, output_size=256):
   idx = 0
   for c in cnts:
       x,y,w,h = cv2.boundingRect(c)
-      #print(w, h)
       if w>200 and h>200:
           idx+=1
           pad_x, pad_y = 100, 100
           new_img=img[y+pad_y:y+h-pad_y,x+pad_x:x+w-pad_x]
-          #cv2.drawContours(im, [c], 0, (0,255,0), 50)
-  #plt.imshow(new_img)
   new_img = adjust_size(new_img, output_size=output_size)
-  #cv2.imwrite("/content/croped.png", new_img)
-  #plt.imshow(img_before)
-  #cv2.imshow("Original Image",image)
-  #cv2.imshow("Canny Edge",edged)
-  #cv2.waitKey(0)
-  #print('>> Objects Cropped Successfully!')
-  #print(">> Check out 'cropped' Directory")
   return new_img
 
 
 
 def split_image(img=None, patch_size=256, img_path = '', dataset_path=''):
+  """
+        This function receive an image, patch_size (output_size), img_path (path to image)
+        an dataset_path (Output dataset path), and split an big image (e.g. 1000x1000) into many images (100x100)
+        and save into a folder
+        Args:
+            img: uint8
+            patch_size: '256' size of path, or size output image
+            img_path : path to current image
+            dataset_path: path to output dataset to save all croped images
+        Return:
+              NULL
+  """
   # Setup hyperparameters and make sure img_size and patch_size are compatible
-
+  print("INFO: spliting image: ", img_path)
   img_size = img.shape[0]
   num_patches = img_size/patch_size
   assert img_size % patch_size == 0, "Image size must be divisible by patch size"
@@ -82,7 +103,7 @@ def split_image(img=None, patch_size=256, img_path = '', dataset_path=''):
   # Loop through height and width of image
   for i, patch_height in enumerate(range(0, img_size, patch_size)): # iterate through height
       for j, patch_width in enumerate(range(0, img_size, patch_size)): # iterate through width
-          img_filename = img_path.split('')[-1].split('.')[0]
+          img_filename = img_path.split('/')[-1].split('.')[0]
           cv2.imwrite(dataset_path + img_filename + str(i)+'_'+str(j)+'.tif', img[patch_height:patch_height+patch_size, # iterate through height
                                           patch_width:patch_width+patch_size, # iterate through width
                                           :])
@@ -99,7 +120,7 @@ def deskew_images(path='./', ext='.TIF', output_size=256, dataset_output=''):
     """
     all_tif_file_paths = glob(os.path.join(path, "**", "*"+ext), recursive=True)
     #print(all_tif_file_paths)
-    for i, imgFullPath in enumerate(all_tif_file_paths[:1]):
+    for i, imgFullPath in enumerate(all_tif_file_paths):
       print("INFO: reading image"+ imgFullPath)
       img_before = cv2.imread(imgFullPath)
       img_gray = cv2.cvtColor(img_before, cv2.COLOR_BGR2GRAY)
@@ -124,10 +145,12 @@ def deskew_images(path='./', ext='.TIF', output_size=256, dataset_output=''):
 
         new_img = crop_image(img_rotated, output_size)
         split_image(new_img, 256, imgFullPath, dataset_output)
+        print("INFO: image "+ imgFullPath + " splited with sucessfully! ")
 
 
 def main():
   args = parser.parse_args()
+  print(args.current_dataset, args.extension, args.output_desired, args.output_dataset)
   deskew_images(args.current_dataset, args.extension, args.output_desired, args.output_dataset)
 
 if __name__== "__main__":
