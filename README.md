@@ -31,6 +31,14 @@ Para utilizar o projeto Cloud Painting, siga as instruções abaixo:
 4. Execute o script principal fornecido na pasta "src" para realizar o processo de inpainting.
 5. Verifique as imagens recuperadas na pasta "results".
 
+
+
+## Guidelines
+
+
+dataset -> img(cortado, deskew, ajusted_size)
+dataset -> dataset(deskew, ajusted_size) -> dataset_croped(cortado)
+
 ## Contribuição
 
 Contribuições são bem-vindas! Se você deseja colaborar com o projeto, sinta-se à vontade para fazer um fork deste repositório, implementar melhorias e enviar uma solicitação de pull. Certifique-se de seguir as diretrizes de contribuição descritas no arquivo CONTRIBUTING.md.

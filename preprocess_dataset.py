@@ -7,8 +7,87 @@ from os.path import isfile, join
 from glob import glob
 import os.path
 from pathlib import Path
+from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser
+import argparse
+ 
 
-def deskew_images(path='./', ext='.TIF'):
+parser = ArgumentParser(description="Preprocess a satelital image dataset", formatter_class=ArgumentDefaultsHelpFormatter)
+
+
+parser.add_argument('--current_dataset', type=str, default='./',
+                    help=('Current dataset path'))
+
+parser.add_argument('--extension', type=str, default='.TIF',
+                    help=('Image extension'))
+parser.add_argument('--output_desired', type=int, default=256,
+                    help=('Dimensionality of output images'))
+
+parser.add_argument('--output_dataset', type=str, default='./',
+                    help=('Path to save images generated'))
+
+
+IMAGE_EXTENSIONS = {'bmp', 'jpg', 'jpeg', 'pgm', 'png', 'ppm',
+                    'tif', 'tiff', 'webp'}
+
+def adjust_size(img, output_size):
+  shape = img.shape
+  x, y = shape[1], shape[0]
+  if y < x:
+    if y % output_size != 0:
+      y = y- (y % output_size)
+    return img[:y,:x-(x-y)]
+  else:
+    if x % output_size != 0:
+      x = shape[1] - (x % output_size)
+    return img[:y-(y-x),:x]
+
+def crop_image(img=None, output_size=256):
+  img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+  img_gray = cv2.GaussianBlur(img_gray, (11, 11), 0)
+  val, bin_mask = cv2.threshold(img_gray,1,255,cv2.THRESH_BINARY)#cv2.bitwise_not(im)
+  edged = cv2.Canny(bin_mask, 10, 250, apertureSize=3)
+  (cnts, _) = cv2.findContours(edged.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+  idx = 0
+  for c in cnts:
+      x,y,w,h = cv2.boundingRect(c)
+      #print(w, h)
+      if w>200 and h>200:
+          idx+=1
+          pad_x, pad_y = 100, 100
+          new_img=img[y+pad_y:y+h-pad_y,x+pad_x:x+w-pad_x]
+          #cv2.drawContours(im, [c], 0, (0,255,0), 50)
+  #plt.imshow(new_img)
+  new_img = adjust_size(new_img, output_size=output_size)
+  #cv2.imwrite("/content/croped.png", new_img)
+  #plt.imshow(img_before)
+  #cv2.imshow("Original Image",image)
+  #cv2.imshow("Canny Edge",edged)
+  #cv2.waitKey(0)
+  #print('>> Objects Cropped Successfully!')
+  #print(">> Check out 'cropped' Directory")
+  return new_img
+
+
+
+def split_image(img=None, patch_size=256, img_path = '', dataset_path=''):
+  # Setup hyperparameters and make sure img_size and patch_size are compatible
+
+  img_size = img.shape[0]
+  num_patches = img_size/patch_size
+  assert img_size % patch_size == 0, "Image size must be divisible by patch size"
+  print(f"Number of patches per row: {num_patches}\
+          \nNumber of patches per column: {num_patches}\
+          \nTotal patches: {num_patches*num_patches}\
+          \nPatch size: {patch_size} pixels x {patch_size} pixels")
+  # Loop through height and width of image
+  for i, patch_height in enumerate(range(0, img_size, patch_size)): # iterate through height
+      for j, patch_width in enumerate(range(0, img_size, patch_size)): # iterate through width
+          img_filename = img_path.split('')[-1].split('.')[0]
+          cv2.imwrite(dataset_path + img_filename + str(i)+'_'+str(j)+'.tif', img[patch_height:patch_height+patch_size, # iterate through height
+                                          patch_width:patch_width+patch_size, # iterate through width
+                                          :])
+          
+def deskew_images(path='./', ext='.TIF', output_size=256, dataset_output=''):
 
     """
         This function receive a path from the dataset and deskew the images
@@ -43,18 +122,15 @@ def deskew_images(path='./', ext='.TIF'):
         else:
           img_rotated = img_before
 
-
-        print("Angle is {}".format(median_angle))
-
-        print(imgFullPath)
-        
-
-        #creating a new directory to images rotated
-        Path(path + "rotated/").mkdir(exist_ok=True)
-        img_name = imgFullPath.split('/')[-1]
-        output_image = path + "rotated/" + img_name
-        cv2.imwrite(output_image, img_rotated)  
-deskew_images('./data/landsat9/') # . is the current location
+        new_img = crop_image(img_rotated, output_size)
+        split_image(new_img, 256, imgFullPath, dataset_output)
 
 
+def main():
+  args = parser.parse_args()
+  deskew_images(args.current_dataset, args.extension, args.output_desired, args.output_dataset)
 
+if __name__== "__main__":
+  main()
+else:
+   deskew_images(current_dataset='./data/landsat9/', ext='.TIF', output_size=256, dataset_output='./data/landsat9/')
