@@ -32,11 +32,10 @@ def load_masks(image_dataset=None, mask_dataset=None, out_mask_dataset=None):
   shape = cv2.imread(image_filenames[0]).shape
   print("INFO: selecting masks to dataset \n Shape will be: {} \n ================================".format(shape))
 
-  for idx, img in enumerate(image_filenames[:1]):
+  for idx, img in enumerate(image_filenames):
     mask_filename = mask_filenames[random.randint(0, len(mask_filenames))]
     mask = cv2.imread(mask_filename)
-    #mask = cv2.resize(mask, (shape[0], shape[1]), interpolation=cv2.INTER_NEAREST)
-    mask = cv2.resize(mask, (512, 512), interpolation=cv2.INTER_NEAREST)
+    mask = cv2.resize(mask, (shape[0], shape[1]), interpolation=cv2.INTER_NEAREST)
     mask_filename = img.split('/')[-1]
     #print(out_mask_dataset+'/'+mask_filename)
     cv2.imwrite(out_mask_dataset+'/'+mask_filename, mask)
