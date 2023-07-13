@@ -25,6 +25,11 @@ O inpainting é uma técnica que consiste em preencher áreas ausentes ou corrom
 
 Para utilizar o projeto Cloud Painting, siga as instruções abaixo:
 
+```
+python3 load_mask.py --image_dataset data/output_B4 --mask_dataset data/output_B5 --output_maskDataset data/mask_dataset/
+```
+
+
 1. Clone este repositório em sua máquina local.
 2. Certifique-se de ter as dependências necessárias instaladas.
 3. Coloque as imagens de entrada com regiões cobertas por nuvens na pasta "data".
