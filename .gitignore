@@ -1,3 +1,6 @@
 data/
 test.py
 /venv_cloud
+*.TIF
+*.json
+main.py
