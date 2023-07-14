@@ -14,8 +14,11 @@ with open(fname) as f:
 meuretangle = [5247, 2303, 6481 - 5247, 3598 - 2303]
 BIV = cv2.imread('LC08_L1TP_002067_20210923_20211003_02_T1_B5.TIF', cv2.IMREAD_GRAYSCALE)
 BIV = BIV[5247:5247+(6481 - 5247), 2303:2303+3598 - 2303]
+
+
 BV = cv2.imread('LC08_L1TP_002067_20210923_20211003_02_T1_B4.TIF', cv2.IMREAD_GRAYSCALE)
 BV = BV[5247:5247+(6481 - 5247), 2303:2303+3598 - 2303]
+
 B_INF = cv2.imread('LC08_L1TP_002067_20210923_20211003_02_T1_B10.TIF', cv2.IMREAD_GRAYSCALE)
 B_INF = B_INF[5247:5247+(6481 - 5247), 2303:2303+3598 - 2303]
 
@@ -24,7 +27,7 @@ BIV = cv2.resize(BIV, (1388, 1411))
 BV = cv2.resize(BV, (1388, 1411))
 B_INF = cv2.resize(B_INF, (1388, 1411))
 
-
+'''
 print(BIV.shape)
 cv2.imshow("BIV", BIV)
 cv2.waitKey(0)
@@ -37,11 +40,11 @@ cv2.destroyAllWindows()
 cv2.imshow("B_INF", B_INF)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
+'''
 
-
-q_cal10 = B_INF / 1
-q_cal4 = BV / 1
-q_cal5 = BIV / 1
+q_cal10 = B_INF# / 1
+q_cal4 = BV# / 1
+q_cal5 = BIV# / 1
 
 RADIANCE_MULT_BAND_10 = float(data['LANDSAT_METADATA_FILE']['LEVEL1_RADIOMETRIC_RESCALING']['RADIANCE_MULT_BAND_10'])
 RADIANCE_ADD_BAND_10 = float(data['LANDSAT_METADATA_FILE']['LEVEL1_RADIOMETRIC_RESCALING']['RADIANCE_ADD_BAND_10'])
@@ -56,7 +59,15 @@ REFLECTANCE_ADD_BAND_5 = float(data['LANDSAT_METADATA_FILE']['LEVEL1_RADIOMETRIC
 SUN_ELEVATION = float(data['LANDSAT_METADATA_FILE']['IMAGE_ATTRIBUTES']['SUN_ELEVATION'])
 EARTH_SUN_DISTANCE = float(data['LANDSAT_METADATA_FILE']['IMAGE_ATTRIBUTES']['EARTH_SUN_DISTANCE'])
 Z = (math.pi / 2) - (SUN_ELEVATION / 2) * math.pi
-print(Z, REFLECTANCE_ADD_BAND_4, REFLECTANCE_ADD_BAND_5, EARTH_SUN_DISTANCE)
+RADIANCE_MULT_BAND_10 = 3.3420E-04
+RADIANCE_ADD_BAND_10 = 0.10000
+
+REFLECTANCE_MULT_BAND_4 = 2.0000E-05
+REFLECTANCE_MULT_BAND_5 = 2.0000E-05
+REFLECTANCE_ADD_BAND_4 = -0.100000
+REFLECTANCE_ADD_BAND_5 = -0.100000
+
+
 R_B4 = ((REFLECTANCE_MULT_BAND_4 * q_cal4) + REFLECTANCE_ADD_BAND_4) / (math.cos(Z) * (1 / EARTH_SUN_DISTANCE ** 2))
 R_B5 = ((REFLECTANCE_MULT_BAND_5 * q_cal5) + REFLECTANCE_ADD_BAND_5) / (math.cos(Z) * (1 / EARTH_SUN_DISTANCE ** 2))
 
@@ -64,6 +75,7 @@ R_B5 = ((REFLECTANCE_MULT_BAND_5 * q_cal5) + REFLECTANCE_ADD_BAND_5) / (math.cos
 
 
 NDVI = (R_B5 - R_B4) / (R_B5 + R_B4)
+print(NDVI.min(), NDVI.max())
 NDVI[np.where(NDVI == 0)] = np.nan
 
 fig, ax = plt.subplots()
@@ -72,7 +84,7 @@ cbar = fig.colorbar(im)
 cbar.ax.set_ylabel('NDVI', fontsize=14)
 ax.axis('off')
 plt.show()
-
+'''
 L = 0.5
 SAVI = (1 + L) * (R_B5 - R_B4) / (L + R_B5 + R_B4)
 
@@ -121,3 +133,4 @@ plt.title('Profile 2010')
 plt.show()
 
 rho, pval = np.corrcoef(d_a_temp, d_a_ndvi)
+'''
