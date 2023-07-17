@@ -17,6 +17,28 @@ O repositório Cloud Painting contém o código-fonte e os recursos necessários
 - **src**: Pasta contendo o código-fonte do projeto.
 - **results**: Pasta contendo as imagens recuperadas após o processo de inpainting.
 
+```
+project/
+|-- data/
+|   |-- raw/
+|   |-- processed/
+|   |-- train/
+|   |-- validation/
+|   |-- test/
+|-- models/
+|-- notebooks/
+|-- src/
+|   |-- data/
+|   |-- models/
+|   |-- utils/
+|-- reports/
+|   |-- figures/
+|   |-- results/
+|-- README.md
+|-- requirements.txt
+
+```
+
 ## Inpainting
 
 O inpainting é uma técnica que consiste em preencher áreas ausentes ou corrompidas em uma imagem com base nas informações disponíveis nas regiões vizinhas. No contexto do projeto Cloud Painting, a técnica de inpainting é aplicada para recuperar as regiões cobertas por nuvens em imagens satelitais. O algoritmo analisa a estrutura e o conteúdo das regiões ao redor das nuvens e estima os valores dos pixels faltantes, resultando em uma imagem completa e livre de obstruções.
