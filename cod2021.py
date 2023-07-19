@@ -4,35 +4,53 @@ import cv2
 import numpy as np
 import math
 import matplotlib.pyplot as plt
-
+import rasterio as rio
+from glob import glob
 #LANDSAT 8
 fname = 'LC08_L1TP_002067_20210923_20211003_02_T1_MTL.json'
 
 with open(fname) as f:
     data = json.load(f)
 
-meuretangle = [5247, 2303, 6481 - 5247, 3598 - 2303]
-BIV = cv2.imread('LC08_L1TP_002067_20210923_20211003_02_T1_B5.TIF', cv2.IMREAD_GRAYSCALE)
-BIV = BIV[5247:5247+(6481 - 5247), 2303:2303+3598 - 2303]
+#S_sentinel_bands = glob("LC08_L1TP_002067_20210923_20211003_02_T1_B5.TIF")
+# B5 = rio.open("LC08_L1TP_002067_20210923_20211003_02_T1_B5.TIF")
+
+# #plt.imshow(satdat.read(1), cmap='pink')
+# # The dataset reports a band count.
+# print(B5.count)
+
+# # And provides a sequence of band indexes.  These are one indexing, not zero indexing like Numpy arrays.
+# print(B5.indexes)
+
+# B5 = B5.read(1)
+# print(B5)
+# B5 = B5[5247:5247+(6481 - 5247), 2303:2303+3598 - 2303]
 
 
-BV = cv2.imread('LC08_L1TP_002067_20210923_20211003_02_T1_B4.TIF', cv2.IMREAD_GRAYSCALE)
-BV = BV[5247:5247+(6481 - 5247), 2303:2303+3598 - 2303]
 
-B_INF = cv2.imread('LC08_L1TP_002067_20210923_20211003_02_T1_B10.TIF', cv2.IMREAD_GRAYSCALE)
-B_INF = B_INF[5247:5247+(6481 - 5247), 2303:2303+3598 - 2303]
+BIV = cv2.imread('LC08_L1TP_002067_20210923_20211003_02_T1_B5.TIF', cv2.IMREAD_UNCHANGED)
+BIV = BIV[2303:2303+3598 - 2303, 5247:5247+(6481 - 5247)]
+print(BIV[0:10])
+plt.imshow(BIV, cmap='pink')
+
+
+BV = cv2.imread('LC08_L1TP_002067_20210923_20211003_02_T1_B4.TIF', cv2.IMREAD_UNCHANGED)
+BV = BV[2303:2303+3598 - 2303, 5247:5247+(6481 - 5247)]
+
+B_INF = cv2.imread('LC08_L1TP_002067_20210923_20211003_02_T1_B10.TIF', cv2.IMREAD_UNCHANGED)
+B_INF = B_INF[2303:2303+3598 - 2303, 5247:5247+(6481 - 5247)]
 
 
 BIV = cv2.resize(BIV, (1388, 1411))
 BV = cv2.resize(BV, (1388, 1411))
 B_INF = cv2.resize(B_INF, (1388, 1411))
 
-'''
+
 print(BIV.shape)
 cv2.imshow("BIV", BIV)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
-
+'''
 cv2.imshow("BV", BV)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
@@ -70,7 +88,7 @@ R_B5 = ((REFLECTANCE_MULT_BAND_5 * q_cal5) + REFLECTANCE_ADD_BAND_5) / (math.cos
 
 NDVI = (R_B5 - R_B4) / (R_B5 + R_B4)
 print(NDVI.min(), NDVI.max())
-NDVI[np.where(NDVI == 0)] = np.nan
+#NDVI[np.where(NDVI == 0)] = np.nan
 
 fig, ax = plt.subplots()
 im = ax.imshow(NDVI, vmin=0, vmax=1, cmap='hsv')
@@ -78,11 +96,11 @@ cbar = fig.colorbar(im)
 cbar.ax.set_ylabel('NDVI', fontsize=14)
 ax.axis('off')
 plt.show()
-'''
+
 L = 0.5
 SAVI = (1 + L) * (R_B5 - R_B4) / (L + R_B5 + R_B4)
 
-IAF = -np.log((0.69 - SAVI) / 0.59) / 0.91
+IAF = -np.emath.log10((0.69 - SAVI) / 0.59) / 0.91
 IAF = np.real(IAF)
 
 EmissividadeNB = 0.97 - 0.0033 * IAF
@@ -90,7 +108,7 @@ EmissividadeNB = 0.97 - 0.0033 * IAF
 K1_CONSTANT_BAND_10 = float(data['LANDSAT_METADATA_FILE']['LEVEL1_THERMAL_CONSTANTS']['K1_CONSTANT_BAND_10'])
 K2_CONSTANT_BAND_10 = float(data['LANDSAT_METADATA_FILE']['LEVEL1_THERMAL_CONSTANTS']['K2_CONSTANT_BAND_10'])
 TempSuperf = (K2_CONSTANT_BAND_10 / np.log((EmissividadeNB * K1_CONSTANT_BAND_10 / L_TOA10) + 1)) - 273.15
-TempSuperf[np.where(TempSuperf < -20)] = np.nan
+#TempSuperf[np.where(TempSuperf < -20)] = np.nan
 
 fig, ax = plt.subplots()
 im = ax.imshow(TempSuperf, cmap='hot')
@@ -107,7 +125,7 @@ y2 = 1
 a_temp = np.rot90(TempSuperf, 1)
 d_a_temp = np.diag(a_temp)
 
-b_temp = cv2.cvtColor(NDVI, cv2.COLOR_GRAY2RGB)
+b_temp = cv2.cvtColor(np.float32(NDVI), cv2.COLOR_GRAY2RGB)
 b_temp = cv2.line(b_temp, (x1, y1), (x2, y2), (255, 0, 0), 3)
 
 a_ndvi = np.rot90(NDVI, 1)
@@ -127,4 +145,3 @@ plt.title('Profile 2010')
 plt.show()
 
 rho, pval = np.corrcoef(d_a_temp, d_a_ndvi)
-'''

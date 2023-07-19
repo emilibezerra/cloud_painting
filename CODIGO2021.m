@@ -1,4 +1,4 @@
-% LANDSAT 8 
+% LANDSAT 8
 clc;clear; close all;
 fname = 'LC08_L1TP_002067_20210923_20211003_02_T1_MTL.json';
 fid = fopen(fname);
@@ -22,7 +22,7 @@ B_INF = imresize(double(imcrop(imread('LC08_L1TP_002067_20210923_20211003_02_T1_
 % BIV = double(imread('TESTE_B5.TIF'));
 % B_INF = double(imread('TESTE_B10.TIF'));
 
-% 
+%
 % BV(find(BV>12000))= mean(BV(:));
 % BIV(find(BIV>20000))= mean(BIV(:));
 % B_INF(find(B_INF<25000))= mean(B_INF(:));
@@ -65,11 +65,11 @@ NDVI = (R_B5 - R_B4)./(R_B5 + R_B4);
 NDVI(find(NDVI==0))= NaN;
 h = imagesc(NDVI, [0 1]);
  axis off;
- set(h, 'AlphaData', ~isnan(NDVI)); 
+ %set(h, 'AlphaData', ~isnan(NDVI));
  set(gca,'color','white');
  c=colorbar
- c.FontSize=14;
- %Set the colormap to hsv: 
+ %c.FontSize=14;
+ %Set the colormap to hsv:
 colormap
 
 
@@ -96,7 +96,7 @@ TempSuperf(find(TempSuperf < -20))= NaN;
 figure;
 h = imagesc(TempSuperf);
 axis off;
-set(h, 'AlphaData', ~isnan(TempSuperf)); 
+set(h, 'AlphaData', ~isnan(TempSuperf));
 set(gca,'color','white');
 c=colorbar
 c.FontSize=14;
