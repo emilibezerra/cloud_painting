@@ -119,16 +119,23 @@ def deskew_images(path='./', ext='.TIF', output_size=256, dataset_output=''):
               null
     """
     all_tif_file_paths = glob(os.path.join(path, "**", "*"+ext), recursive=True)
+    all_tif_file_paths = ["data/LC08_L1TP_001067_20210714_20210721_02_T1_B10.TIF"]
     #print(all_tif_file_paths)
     for i, imgFullPath in enumerate(all_tif_file_paths):
       print("INFO: reading image"+ imgFullPath)
-      img_before = cv2.imread(imgFullPath)
+      img_before = cv2.imread(imgFullPath, cv2.IMREAD_UNCHANGED)
       img_gray = cv2.cvtColor(img_before, cv2.COLOR_BGR2GRAY)
       val, bin_mask = cv2.threshold(img_gray,1,255,cv2.THRESH_BINARY)#cv2.bitwise_not(im)
       img_edges = cv2.Canny(bin_mask, 100, 100, apertureSize=3)
       lines = cv2.HoughLinesP(img_edges, 1, math.pi / 180.0, 100, minLineLength=100, maxLineGap=5)
       angles = []
-
+      cv2.imshow('graycsale image',img_edges)
+ 
+      # waitKey() waits for a key press to close the window and 0 specifies indefinite loop
+      cv2.waitKey(0)
+      
+      # cv2.destroyAllWindows() simply destroys all the windows we created.
+      cv2.destroyAllWindows()
       if (lines is not None):
         for x1, y1, x2, y2 in lines[0]:
           # cv2.line(img_before, (x1, y1), (x2, y2), (255, 0, 0), 3)
