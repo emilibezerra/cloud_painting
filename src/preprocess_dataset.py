@@ -64,7 +64,7 @@ def crop_image(img=None, output_size=256):
               image croped
   """
   print("INFO: croping and adjusting image...")
-  #img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+  img_gray = img[:,:,0]
   img_gray = cv2.GaussianBlur(img, (11, 11), 0)
   val, bin_mask = cv2.threshold(img_gray,1,255,cv2.THRESH_BINARY)#cv2.bitwise_not(im)
   edged = cv2.Canny(np.uint8(bin_mask), 10, 250, apertureSize=3)
@@ -97,8 +97,7 @@ def split_image(img=None, patch_size=256, img_path = '', dataset_path=''):
   # Setup hyperparameters and make sure img_size and patch_size are compatible
   if len(img.shape) != 3:
     img = np.expand_dims(img, axis=-1)
-  print("INFO: spliting image: {0} with size of: {1}".format(img_path,img.shape))
-  
+  #print("INFO: spliting image: {0} with size of: {1}".format(img_path,img.shape))
   img_size = img.shape[0]
   num_patches = img_size/patch_size
   assert img_size % patch_size == 0, "Image size must be divisible by patch size"
@@ -109,8 +108,9 @@ def split_image(img=None, patch_size=256, img_path = '', dataset_path=''):
   # Loop through height and width of image
   for i, patch_height in enumerate(range(0, img_size, patch_size)): # iterate through height
       for j, patch_width in enumerate(range(0, img_size, patch_size)): # iterate through width
-          img_filename = img_path.split('/')[-1].split('.')[0]
-          cv2.imwrite(dataset_path + img_filename + str(i)+'_'+str(j)+'.tif', img[patch_height:patch_height+patch_size, # iterate through height
+          img_filename = img_path.split('\\')[-1].split('.')[0]
+          print(dataset_path + img_filename + str(i)+'_'+str(j)+'.TIF')
+          cv2.imwrite(dataset_path +'/'+ img_filename + str(i)+'_'+str(j)+'.TIF', img[patch_height:patch_height+patch_size, # iterate through height
                                           patch_width:patch_width+patch_size, # iterate through width
                                           :])
           
@@ -125,11 +125,11 @@ def deskew_images(path='./', ext='.TIF', output_size=256, dataset_output=''):
               null
     """
     all_tif_file_paths = glob(os.path.join(path, "**", "*"+ext), recursive=True)
-    all_tif_file_paths = ["LC08_L1TP_002067_20210923_20211003_02_T1_B4.TIF"]
+
     
     #print(all_tif_file_paths)
     for i, imgFullPath in enumerate(all_tif_file_paths):
-      print("INFO: reading image"+ imgFullPath)
+      print("INFO: reading image "+ imgFullPath)
       #image = rasterio.open(imgFullPath)
       # Create an Image object from an Image
 
@@ -143,14 +143,11 @@ def deskew_images(path='./', ext='.TIF', output_size=256, dataset_output=''):
       # Display the Image rotated by 45 degrees
 
       #rotated.show()
-      img_before_b4 = cv2.imread(imgFullPath, cv2.IMREAD_UNCHANGED)
-      img_before_b5 = cv2.imread("LC08_L1TP_002067_20210923_20211003_02_T1_B5.TIF", cv2.IMREAD_UNCHANGED)
-      img_before_b10 = cv2.imread("LC08_L1TP_002067_20210923_20211003_02_T1_B10.TIF", cv2.IMREAD_UNCHANGED)
-      img_before = np.dstack([img_before_b4, img_before_b5, img_before_b10])
+      img_before = cv2.imread(imgFullPath, cv2.IMREAD_UNCHANGED)
       #plt.imshow(img_before, cmap='pink')
-      #img_before_gray = cv2.imread(imgFullPath)
+      img_before_gray = img_before[:,:,0]
       #img_gray = cv2.cvtColor(img_before_gray, cv2.COLOR_BGR2GRAY)
-      val, bin_mask = cv2.threshold(np.uint8(img_before_b4),0,255,cv2.THRESH_BINARY)#cv2.bitwise_not(im)
+      val, bin_mask = cv2.threshold(np.uint8(img_before_gray),0,255,cv2.THRESH_BINARY)#cv2.bitwise_not(im)
       #plt.imshow(bin_mask, cmap=plt.cm.gray)  # use appropriate colormap here
       #plt.show()
       #transform = Affine(300.0379266750948, 0.0, 101985.0, 0.0,
