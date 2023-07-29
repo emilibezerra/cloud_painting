@@ -6,10 +6,13 @@ from os import listdir
 from os.path import isfile, join
 from glob import glob
 import os.path
+import rasterio
+from PIL import Image
 from pathlib import Path
 from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser
 import argparse
- 
+from rasterio.transform import Affine
+import matplotlib.pyplot as plt
 
 parser = ArgumentParser(description="Preprocess a satelital image dataset", formatter_class=ArgumentDefaultsHelpFormatter)
 
@@ -22,7 +25,7 @@ parser.add_argument('--extension', type=str, default='.TIF',
 parser.add_argument('--output_desired', type=int, default=256,
                     help=('Dimensionality of output images'))
 
-parser.add_argument('--output_dataset', type=str, default='./',
+parser.add_argument('--output_dataset', type=str, default='./data/',
                     help=('Path to save images generated'))
 
 
@@ -61,10 +64,10 @@ def crop_image(img=None, output_size=256):
               image croped
   """
   print("INFO: croping and adjusting image...")
-  img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-  img_gray = cv2.GaussianBlur(img_gray, (11, 11), 0)
+  #img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+  img_gray = cv2.GaussianBlur(img, (11, 11), 0)
   val, bin_mask = cv2.threshold(img_gray,1,255,cv2.THRESH_BINARY)#cv2.bitwise_not(im)
-  edged = cv2.Canny(bin_mask, 10, 250, apertureSize=3)
+  edged = cv2.Canny(np.uint8(bin_mask), 10, 250, apertureSize=3)
   (cnts, _) = cv2.findContours(edged.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
   idx = 0
   for c in cnts:
@@ -92,7 +95,10 @@ def split_image(img=None, patch_size=256, img_path = '', dataset_path=''):
               NULL
   """
   # Setup hyperparameters and make sure img_size and patch_size are compatible
-  print("INFO: spliting image: ", img_path)
+  if len(img.shape) != 3:
+    img = np.expand_dims(img, axis=-1)
+  print("INFO: spliting image: {0} with size of: {1}".format(img_path,img.shape))
+  
   img_size = img.shape[0]
   num_patches = img_size/patch_size
   assert img_size % patch_size == 0, "Image size must be divisible by patch size"
@@ -119,23 +125,57 @@ def deskew_images(path='./', ext='.TIF', output_size=256, dataset_output=''):
               null
     """
     all_tif_file_paths = glob(os.path.join(path, "**", "*"+ext), recursive=True)
-    all_tif_file_paths = ["data/LC08_L1TP_001067_20210714_20210721_02_T1_B10.TIF"]
+    all_tif_file_paths = ["LC08_L1TP_002067_20210923_20211003_02_T1_B4.TIF"]
+    
     #print(all_tif_file_paths)
     for i, imgFullPath in enumerate(all_tif_file_paths):
       print("INFO: reading image"+ imgFullPath)
-      img_before = cv2.imread(imgFullPath, cv2.IMREAD_UNCHANGED)
-      img_gray = cv2.cvtColor(img_before, cv2.COLOR_BGR2GRAY)
-      val, bin_mask = cv2.threshold(img_gray,1,255,cv2.THRESH_BINARY)#cv2.bitwise_not(im)
-      img_edges = cv2.Canny(bin_mask, 100, 100, apertureSize=3)
-      lines = cv2.HoughLinesP(img_edges, 1, math.pi / 180.0, 100, minLineLength=100, maxLineGap=5)
-      angles = []
-      cv2.imshow('graycsale image',img_edges)
+      #image = rasterio.open(imgFullPath)
+      # Create an Image object from an Image
+
+      #colorImage  = Image.open(imgFullPath)
+
+      
+
+      # Rotate it by 45 degrees
+
+      #rotated     = colorImage.rotate(45)
+      # Display the Image rotated by 45 degrees
+
+      #rotated.show()
+      img_before_b4 = cv2.imread(imgFullPath, cv2.IMREAD_UNCHANGED)
+      img_before_b5 = cv2.imread("LC08_L1TP_002067_20210923_20211003_02_T1_B5.TIF", cv2.IMREAD_UNCHANGED)
+      img_before_b10 = cv2.imread("LC08_L1TP_002067_20210923_20211003_02_T1_B10.TIF", cv2.IMREAD_UNCHANGED)
+      img_before = np.dstack([img_before_b4, img_before_b5, img_before_b10])
+      #plt.imshow(img_before, cmap='pink')
+      #img_before_gray = cv2.imread(imgFullPath)
+      #img_gray = cv2.cvtColor(img_before_gray, cv2.COLOR_BGR2GRAY)
+      val, bin_mask = cv2.threshold(np.uint8(img_before_b4),0,255,cv2.THRESH_BINARY)#cv2.bitwise_not(im)
+      #plt.imshow(bin_mask, cmap=plt.cm.gray)  # use appropriate colormap here
+      #plt.show()
+      #transform = Affine(300.0379266750948, 0.0, 101985.0, 0.0,
+      #                 -300.041782729805, 2826915.0)
+      #image = rasterio.transform.AffineTransformer(image.transform)
+      #image = rasterio.open(imgFullPath, transform=image.transform)
+      #img_before = ndimage.rotate(img_before, -77)
+      
+      #cv2.imshow('graycsale image',img_before)
  
       # waitKey() waits for a key press to close the window and 0 specifies indefinite loop
-      cv2.waitKey(0)
+      #cv2.waitKey(0)
       
       # cv2.destroyAllWindows() simply destroys all the windows we created.
-      cv2.destroyAllWindows()
+      #cv2.destroyAllWindows()
+      img_edges = cv2.Canny(np.uint8(bin_mask), 100, 100, apertureSize=3)
+      lines = cv2.HoughLinesP(img_edges, 1, math.pi / 180.0, 100, minLineLength=100, maxLineGap=5)
+      angles = []
+      #cv2.imshow('graycsale image',img_edges)
+ 
+      # waitKey() waits for a key press to close the window and 0 specifies indefinite loop
+      #cv2.waitKey(0)
+      
+      # cv2.destroyAllWindows() simply destroys all the windows we created.
+      #cv2.destroyAllWindows()
       if (lines is not None):
         for x1, y1, x2, y2 in lines[0]:
           # cv2.line(img_before, (x1, y1), (x2, y2), (255, 0, 0), 3)
@@ -149,6 +189,14 @@ def deskew_images(path='./', ext='.TIF', output_size=256, dataset_output=''):
           img_rotated = ndimage.rotate(img_before, median_angle)
         else:
           img_rotated = img_before
+        #plt.imshow(img_rotated, cmap='pink')
+        #cv2.imshow('rotated',img_rotated)
+ 
+        # waitKey() waits for a key press to close the window and 0 specifies indefinite loop
+        #cv2.waitKey(0)
+        
+        # cv2.destroyAllWindows() simply destroys all the windows we created.
+        #cv2.destroyAllWindows()
 
         new_img = crop_image(img_rotated, output_size)
         split_image(new_img, 256, imgFullPath, dataset_output)
