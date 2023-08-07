@@ -1,7 +1,6 @@
 test.py
 /venv_cloud
 *.TIF
-*.png
 *.json
 *.txt
 *.xml
