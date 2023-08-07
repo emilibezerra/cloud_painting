@@ -37,7 +37,7 @@ project/
 ```
 
 ## NDVI
-![Alt text](ndvi_example.png)
+<img title="NDVI" alt="Alt text" src="ndvi_example.png" width="400" height="400">
 
 ## LST
 ![Alt text](lst_example.png)
