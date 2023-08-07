@@ -99,21 +99,53 @@ def split_image(img=None, patch_size=256, img_path = '', dataset_path=''):
     img = np.expand_dims(img, axis=-1)
   #print("INFO: spliting image: {0} with size of: {1}".format(img_path,img.shape))
   img_size = img.shape[0]
+  #img = (img - np.mean(img)) / np.std(img)
   num_patches = img_size/patch_size
   assert img_size % patch_size == 0, "Image size must be divisible by patch size"
   print(f"Number of patches per row: {num_patches}\
           \nNumber of patches per column: {num_patches}\
           \nTotal patches: {num_patches*num_patches}\
           \nPatch size: {patch_size} pixels x {patch_size} pixels")
+  
+    # Loop through height and width of image
+  for i, patch_height in enumerate(range(0, img_size, patch_size)): # iterate through height
+      for j, patch_width in enumerate(range(0, img_size, patch_size)): # iterate through width
+          img_filename = img_path.split('/')[-1].split('.')[0]
+          print(dataset_path + img_filename + str(i).zfill(3)+'_'+str(j).zfill(3)+'.TIF')
+          cv2.imwrite(dataset_path +'/'+ img_filename + '_clipped_' + str(i).zfill(3)+'_'+str(j).zfill(3)+'.TIF', img[patch_height:patch_height+patch_size, # iterate through height
+                                          patch_width:patch_width+patch_size, # iterate through width
+                                          :])
+  """
+  # Create a series of subplots
+  fig, axs = plt.subplots(nrows=img_size // patch_size, # need int not float
+                          ncols=img_size // patch_size, 
+                          figsize=(256, 256),
+                          sharex=True,
+                          sharey=True)
+
   # Loop through height and width of image
   for i, patch_height in enumerate(range(0, img_size, patch_size)): # iterate through height
       for j, patch_width in enumerate(range(0, img_size, patch_size)): # iterate through width
-          img_filename = img_path.split('\\')[-1].split('.')[0]
-          print(dataset_path + img_filename + str(i)+'_'+str(j)+'.TIF')
-          cv2.imwrite(dataset_path +'/'+ img_filename + str(i)+'_'+str(j)+'.TIF', img[patch_height:patch_height+patch_size, # iterate through height
-                                          patch_width:patch_width+patch_size, # iterate through width
-                                          :])
           
+          # Plot the permuted image patch (image_permuted -> (Height, Width, Color Channels))
+          axs[i, j].imshow(img[patch_height:patch_height+patch_size, # iterate through height 
+                                          patch_width:patch_width+patch_size, # iterate through width
+                                          1], cmap='pink') # get all color channels
+          
+          # Set up label information, remove the ticks for clarity and set labels to outside
+          axs[i, j].set_ylabel(i+1, 
+                              rotation="horizontal", 
+                              horizontalalignment="right", 
+                              verticalalignment="center") 
+          axs[i, j].set_xlabel(j+1) 
+          axs[i, j].set_xticks([])
+          axs[i, j].set_yticks([])
+          axs[i, j].label_outer()
+
+  # Set a super title
+  fig.suptitle("Patchified", fontsize=16)
+  plt.show()
+  """        
 def deskew_images(path='./', ext='.TIF', output_size=256, dataset_output=''):
 
     """
@@ -208,4 +240,4 @@ def main():
 if __name__== "__main__":
   main()
 else:
-   deskew_images(current_dataset='./data/landsat9/', ext='.TIF', output_size=256, dataset_output='./data/landsat9/')
+   deskew_images(current_dataset='./data/combined_dataset/', ext='.TIF', output_size=256, dataset_output='./data/clipped_dataset/')

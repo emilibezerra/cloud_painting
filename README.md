@@ -15,33 +15,33 @@ O repositório Cloud Painting contém o código-fonte e os recursos necessários
 
 - **data**: Pasta contendo as imagens de entrada com regiões cobertas por nuvens.
 - **src**: Pasta contendo o código-fonte do projeto.
-- **results**: Pasta contendo as imagens recuperadas após o processo de inpainting.
 
 ```
 project/
 |-- data/
-|   |-- raw/
-|   |-- processed/
-|   |-- train/
-|   |-- validation/
-|   |-- test/
-|-- models/
-|-- notebooks/
+|   |-- clipped_dataset/    [contain all images with 3 bands (B4, B5, B10)]
+|   |-- LST/                [images with land surface temperature]
+|   |-- NDVI/               [images with Noramilized Diferencial Vegetation Index]
+|   |-- metadata_xml/       [metadata to calculate NDVI and LST of images]
 |-- src/
-|   |-- data/
-|   |-- models/
-|   |-- utils/
-|-- reports/
-|   |-- figures/
-|   |-- results/
+|   |-- cod2021.py
+|   |-- combine_bands.py
+|   |-- landsat8.py
+|   |-- preprocess_dataset.py
+|   |-- read_ndvi_lst.py
 |-- README.md
 |-- requirements.txt
+|-- lst_example.png
+|-- ndvi_example.png
 
 ```
 
-## Inpainting
+## NDVI
+![image info](ndvi_example.png)
 
-O inpainting é uma técnica que consiste em preencher áreas ausentes ou corrompidas em uma imagem com base nas informações disponíveis nas regiões vizinhas. No contexto do projeto Cloud Painting, a técnica de inpainting é aplicada para recuperar as regiões cobertas por nuvens em imagens satelitais. O algoritmo analisa a estrutura e o conteúdo das regiões ao redor das nuvens e estima os valores dos pixels faltantes, resultando em uma imagem completa e livre de obstruções.
+## LST
+![image info](lst_example.png)
+
 
 ## Uso
 
