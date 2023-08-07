@@ -35,6 +35,8 @@ project/
 |-- ndvi_example.png
 
 ```
+## NDVI
+<img title="NDVI" alt="Alt text" src="img_example.png" width="400" height="300">
 
 ## NDVI
 <img title="NDVI" alt="Alt text" src="ndvi_example.png" width="400" height="300">
