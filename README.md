@@ -20,17 +20,17 @@ O repositório Cloud Painting contém o código-fonte e os recursos necessários
 project/
 |-- data/
 |   |-- clipped_dataset/    [contain all images with 3 bands (B4, B5, B10)]
-|   |   |-- train/          [contain 80/10 images with 3 bands (B4, B5, B10)]
-|   |   |-- test/           [contain 10/10 images with 3 bands (B4, B5, B10)]
-|   |   |-- val/            [contain 10/10 images with 3 bands (B4, B5, B10)]
+|   |   |-- train/          [contain 80/100 images with 3 bands (B4, B5, B10)]
+|   |   |-- test/           [contain 10/100 images with 3 bands (B4, B5, B10)]
+|   |   |-- val/            [contain 10/100 images with 3 bands (B4, B5, B10)]
 |   |-- LST/                [images with land surface temperature]
-|   |   |-- train/          [contain 80/10 images LST]
-|   |   |-- test/           [contain 10/10 images LST]
-|   |   |-- val/            [contain 10/10 images LST]
+|   |   |-- train/          [contain 80/100 images LST]
+|   |   |-- test/           [contain 10/100 images LST]
+|   |   |-- val/            [contain 10/100 images LST]
 |   |-- NDVI/               [images with Noramilized Diferencial Vegetation Index]
-|   |   |-- train/          [contain 80/10 images NDVI]
-|   |   |-- test/           [contain 10/10 images NDVI]
-|   |   |-- val/            [contain 10/10 images NDVI]
+|   |   |-- train/          [contain 80/100 images NDVI]
+|   |   |-- test/           [contain 10/100 images NDVI]
+|   |   |-- val/            [contain 10/100 images NDVI]
 |   |-- metadata_xml/       [metadata to calculate NDVI and LST of images]
 |-- src/
 |   |-- cod2021.py
