@@ -37,10 +37,10 @@ project/
 ```
 
 ## NDVI
-![image info](ndvi_example.png)
+![Alt text](ndvi_example.png)
 
 ## LST
-![image info](lst_example.png)
+![Alt text](lst_example.png)
 
 
 ## Uso
