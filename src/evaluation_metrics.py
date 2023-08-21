@@ -4,12 +4,14 @@ from skimage.metrics import structural_similarity as ssim
 from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser
 import argparse
 import cv2
+import seaborn as sns
 import numpy as np
 from math import log10, sqrt
 from tqdm import tqdm
 from glob import glob
 import xml.etree.ElementTree as ET
 from pathlib import Path
+import matplotlib.pyplot as plt
 
 
 
@@ -54,7 +56,7 @@ def calculate_metrics(dataset_test_path, dataset_predicted_path):
         img_original = cv2.imread(test, cv2.IMREAD_UNCHANGED)
         
         img_reconstructed= cv2.imread(pred, cv2.IMREAD_UNCHANGED)
-        #compressed = cv2.blur(compressed,(5,5))
+        img_reconstructed = cv2.blur(img_reconstructed,(5,5))
 
         (score, diff) = ssim(img_original, img_reconstructed, full=True, data_range=img_original.max() - img_original.min())
         ssim_res.append(score)
@@ -63,8 +65,19 @@ def calculate_metrics(dataset_test_path, dataset_predicted_path):
         psnr_res.append(psnr(img_original, img_reconstructed))
         
     #print metrics
-    #print(mse_res)
-
+    print("=======================================================")
+    print("Evaluation metrics results: \n Mean MSE: {0} \n Mean PSNR: {1} \n Mean SSIM: {2}".format(np.mean(mse_res),np.mean(psnr_res) ,np.mean(ssim_res)))
+    print("\n STD MSE: {0} \n STD PSNR: {1} \n STD SSIM: {2}".format(np.std(mse_res),np.std(psnr_res) ,np.std(ssim_res)))
+    print("=======================================================")
+    fig, axs = plt.subplots(3)
+    fig.suptitle('BoxPlot Metrics')
+    sns.boxplot([mse_res],  orient='v' , ax=axs[0])
+    axs[0].set_title("MSE")
+    sns.boxplot([psnr_res],  orient='v' , ax=axs[1])
+    axs[1].set_title("PSNR")
+    sns.boxplot([ssim_res],  orient='v' , ax=axs[2])
+    axs[2].set_title("SSIM")
+    plt.show()
 
 
 if __name__== "__main__":
