@@ -6,4 +6,8 @@ test.py
 *.xml
 main.py
 /checagem/
-/data/
+/data/ 
+/dataset_peru/
+/output_maskdataset_thin/
+/output_maskdataset_thick/
+/cliped_dataset/

@@ -14,7 +14,7 @@ from pathlib import Path
 parser = ArgumentParser(description="Calcule NDVI and LST from satelital images", formatter_class=ArgumentDefaultsHelpFormatter)
 
 
-parser.add_argument('--dataset_path', type=str, default='./data/clipped_dataset',
+parser.add_argument('--dataset_path', type=str, default='./data/peru_dataset/dataset_14745/val_source/',
                     help=('Path to Dataset images'))
 
 parser.add_argument('--xml_path', type=str, default='./data/metadata_xml/',
@@ -36,16 +36,21 @@ def create_dir(path, folder_name):
 #Calcule NDVI and LST -> save data
 def calcule_ndvi_lst(dataset_path, xml_path):
     #creating output folders...
-    path = 'data/'
+    path = 'data/test2/'
     create_dir(path, 'NDVI')
     create_dir(path, 'LST')
 
     image_filenames=[img_filename for img_filename in glob(dataset_path+"/*")]
+    #removing masks
+    #image_filenames = filter(lambda name: name.contains('mask'), image_filenames)
+    image_filenames=[x for x in image_filenames if 'mask' not in x]
     print("INFO: Calculating NDVI and LST to {} images".format(len(image_filenames)))
     for full_filename in tqdm(image_filenames):
+        #print(full_filename)
         IMG_FILE = cv2.imread(full_filename, cv2.IMREAD_UNCHANGED)
         filename = full_filename.split('/')[-1]
         xml_name = xml_path + filename.split('clipped_')[0]+'MTL.xml'
+        #print(xml_name)
         tree = ET.parse(xml_name)
         root = tree.getroot()
 
@@ -111,8 +116,8 @@ def calcule_ndvi_lst(dataset_path, xml_path):
         plt.show()
         '''
         
-        cv2.imwrite(path + '/NDVI/' + filename, NDVI)
-        cv2.imwrite(path + '/LST/' + filename, TempSuperf)
+        cv2.imwrite(path + '/NDVI/' + filename.replace('.png', '.tif'), NDVI)
+        cv2.imwrite(path + '/LST/' + filename.replace('.png', '.tif'), TempSuperf)
 
 
 
