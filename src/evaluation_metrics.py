@@ -40,10 +40,12 @@ def pearson(original, predicted):
     return (np.corrcoef(original.flatten(), predicted.flatten()))
 
 def calculate_metrics(dataset_test_path, dataset_predicted_path):
-
+    #Read all images from folder original - source
     img_test=[img_filename for img_filename in glob(dataset_test_path+"/*.TIF")]
+    #Read all images from folder test
     img_predicted=[img_filename for img_filename in glob(dataset_predicted_path+"/*.TIF")]
-    mse_res = []
+    #save in vectors mestrics
+    mse_res = [] 
     pearson_res = []
     ssim_res = []
     psnr_res = []
