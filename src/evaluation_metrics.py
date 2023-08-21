@@ -56,7 +56,7 @@ def calculate_metrics(dataset_test_path, dataset_predicted_path):
         img_original = cv2.imread(test, cv2.IMREAD_UNCHANGED)
         
         img_reconstructed= cv2.imread(pred, cv2.IMREAD_UNCHANGED)
-        img_reconstructed = cv2.blur(img_reconstructed,(5,5))
+        #img_reconstructed = cv2.blur(img_reconstructed,(5,5))
 
         (score, diff) = ssim(img_original, img_reconstructed, full=True, data_range=img_original.max() - img_original.min())
         ssim_res.append(score)
