@@ -47,15 +47,15 @@ project/
 ## CLIPPED_DATASET
 
 An example:
-<img title="NDVI" alt="Alt text" src="img_example.png" width="400" height="300">
+<img title="NDVI" alt="Alt text" src="img/img_example.png" width="400" height="300">
 
 ## NDVI
 An example:
-<img title="NDVI" alt="Alt text" src="ndvi_example.png" width="400" height="300">
-
+<img title="NDVI" alt="Alt text" src="img/ndvi_example.png" width="400" height="300">
+s
 ## LST
 An example:
-<img title="LST" alt="Alt text" src="lst_example.png" width="400" height="300">
+<img title="LST" alt="Alt text" src="img/lst_example.png" width="400" height="300">
 
 
 ## Uso
