@@ -46,21 +46,21 @@ def calculate_metrics(dataset_test_path, dataset_predicted_path):
     img_predicted=[img_filename for img_filename in glob(dataset_predicted_path+"/*.TIF")]
     #save in vectors mestrics
     mse_res = [] 
-    pearson_res = []
+    #pearson_res = []
     ssim_res = []
     psnr_res = []
     for i, [test, pred] in tqdm(enumerate(zip(img_test, img_predicted))):
 
-        original = cv2.imread(test, cv2.IMREAD_UNCHANGED)
+        img_original = cv2.imread(test, cv2.IMREAD_UNCHANGED)
         
-        compressed = cv2.imread(pred, cv2.IMREAD_UNCHANGED)
+        img_reconstructed= cv2.imread(pred, cv2.IMREAD_UNCHANGED)
         #compressed = cv2.blur(compressed,(5,5))
 
-        (score, diff) = ssim(original, compressed, full=True, data_range=original.max() - original.min())
+        (score, diff) = ssim(img_original, img_reconstructed, full=True, data_range=img_original.max() - img_original.min())
         ssim_res.append(score)
-        pearson_res.append(pearson(original, compressed))
-        mse_res.append(mse(original, compressed))
-        psnr_res.append(psnr(original, compressed))
+        #pearson_res.append(pearson(img_original, compressed))
+        mse_res.append(mse(img_original, img_reconstructed))
+        psnr_res.append(psnr(img_original, img_reconstructed))
         
     #print metrics
     #print(mse_res)
