@@ -11,3 +11,4 @@ main.py
 /output_maskdataset_thin/
 /output_maskdataset_thick/
 /cliped_dataset/
+*.ipynb

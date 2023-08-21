@@ -52,7 +52,7 @@ def calculate_metrics(dataset_test_path, dataset_predicted_path):
         original = cv2.imread(test, cv2.IMREAD_UNCHANGED)
         
         compressed = cv2.imread(pred, cv2.IMREAD_UNCHANGED)
-        compressed = cv2.blur(compressed,(5,5))
+        #compressed = cv2.blur(compressed,(5,5))
 
         (score, diff) = ssim(original, compressed, full=True, data_range=original.max() - original.min())
         ssim_res.append(score)
