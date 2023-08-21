@@ -62,8 +62,8 @@ def calculate_metrics(dataset_test_path, dataset_predicted_path):
         mse_res.append(mse(original, compressed))
         psnr_res.append(psnr(original, compressed))
         
-
-    print(mse_res)
+    #print metrics
+    #print(mse_res)
 
 
 
